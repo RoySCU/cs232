@@ -1,0 +1,76 @@
+apply plugin: 'java'
+
+def mainClass () {
+    switch (homework) {
+        case "hw1":
+            return "CallGraph"
+        default:
+            throw new Exception("Didn't reconize homework='" + homework +"', remember to set it in gradle.properties");
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    // Use JUnit test framework
+    testCompile 'junit:junit:4.12'
+    compile name: 'minijava-parser'
+}
+
+repositories {
+   flatDir {
+       dirs 'lib'
+   }
+}
+
+sourceSets {
+    parse {
+        java { srcDir "src/parse/java" }
+    }
+    main {
+        java { 
+            compileClasspath += parse.output;
+            runtimeClasspath += parse.output
+        }
+    }
+    test {
+        java { 
+            compileClasspath += parse.output;
+            runtimeClasspath += parse.output
+        }
+    }
+}
+
+test { 
+  testLogging { 
+    showStandardStreams = true
+  }
+}
+
+task run (type: JavaExec) { 
+    standardInput = System.in
+    main = mainClass()
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.parse.runtimeClasspath
+}
+
+task sourcesTar(type: Tar, dependsOn: classes) {
+    from sourceSets.main.allJava
+}
+
+task ensureTestcases (type: Exec) {
+    executable "mkdir"
+    args "-p", "testcases/${homework}"
+}
+
+task pregrade(type: Exec) {
+    dependsOn sourcesTar, test, ensureTestcases
+    executable "bash"
+    args "./grade.sh", homework, ".", 
+      "testcases/${homework}", "build/distributions/${rootProject.name}.tar"
+}
+
+artifacts {
+    archives sourcesTar
+}

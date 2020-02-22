@@ -1,0 +1,4 @@
+DotGraphExample_main -> Operator_compute
+Operator_compute -> Operator_add
+Operator_compute -> Operator_mult
+Operator_compute -> Operator_id
