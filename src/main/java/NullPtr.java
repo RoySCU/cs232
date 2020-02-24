@@ -15,7 +15,9 @@ public static void main(String[] args){
               NullPtrState state = new NullPtrState();
               state.getSet(getSet);
               
-            
+              for(int i = 0; i < state.ClassHierachy.size(); i++) {
+                System.out.println(state.ClassHierachy.get(i));
+              }            
               for(int i = 0; i < state.Var.size(); i++) {
                 System.out.println(state.Var.get(i).prefix);
                 System.out.println("type is " + state.Var.get(i).type);
@@ -106,7 +108,7 @@ public Object visit(ClassDeclaration n, String s) {
         return null;
 }
 public Object visit(ClassExtendsDeclaration n, String s) {
-        ClassHierachy.add(n.f1.f0.toString());
+        ClassHierachy.add(n.f1.f0.toString() + "_extends_" + n.f3.f0.toString());
         // look up and add baseclass info
         for (int i = 0; i < Var.size(); i++) {
             if (Var.get(i).prefix.indexOf(n.f3.f0.toString() + "_") >= 0) {
